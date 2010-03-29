@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import datetime
 from mtick_api.mtickapi import *
 from mtick_api.libs import ListSync
@@ -7,7 +8,7 @@ class NeplaticiSync(ListSync):
     
     def init(self):
         # populate @self.objlist with our data (addresses from DB in this case)
-        self.objlist = Neplatici().get()
+        self.objlist = [ '10.10.10.10', '10.10.10.11', '10.10.10.12', '10.10.0.0/24' ]
     
     def create_item(self, nitem, obj):
         # populate the new item @nitem with our data from @obj
@@ -31,43 +32,6 @@ class NeplaticiSync(ListSync):
         except Exception:
           # does not have an attribute address -> continue
           return
-
-
-# sezene seznam neplaticu
-import psycopg2
-DBNAME = ""
-HOST = ""
-USER = ""
-PASSWORD = ""
-
-query = """
-SELECT DISTINCT 
-  klientska_zarizeni.ip
-FROM
-  klientska_zarizeni
-  INNER JOIN platby ON (klientska_zarizeni.clen = platby.clen)
-  INNER JOIN aktualni_splatnost ON (klientska_zarizeni.clen = aktualni_splatnost.varsym)
-WHERE
-  platby.vyjimka = 'f' AND 
-  platby.ma_dati - platby.dal > 0 AND 
-  aktualni_splatnost.splatnost < now();
-"""
-
-class Neplatici(object):
-  def get( self ):
-      # connect
-      try:
-        con = psycopg2.connect("dbname='%s' host='%s' user='%s' password='%s'" % ( DBNAME, HOST, USER, PASSWORD, ) )
-        c = con.cursor()
-        c.execute( query )
-        print query
-        res = c.fetchall()
-      except Exception, e:
-        print 'err', e
-        return
-
-      return [ i[ 0 ] for i in res ]
-
 
 
 
