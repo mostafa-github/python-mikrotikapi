@@ -1,0 +1,1 @@
+Allows for easy control of MikroTik routers settings from Python. Works as a Python wrapper over the raw ssh interface of MikroTik.
